@@ -1,6 +1,8 @@
 [submodule "frontend"]
 	path = v2land-frontend
 	url = git@github.com:surgefm/v2land-frontend.git
+	branch = master
 [submodule "redstone"]
 	path = v2land-redstone
 	url = git@github.com:surgefm/v2land-redstone.git
+	branch = master

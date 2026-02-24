@@ -600,8 +600,7 @@ async function seedDatabase(data) {
         updatedAt: e.updatedAt || now,
       };
 
-      // Extract time-of-day from commitTime for the TIME column
-      const commitTimeStr = new Date(commitTime).toISOString().split('T')[1].replace('Z', '');
+      const commitTimeStr = new Date(commitTime).toISOString();
 
       await pg.query(
         `INSERT INTO commit (id, summary, data, "isForkCommit", time, "authorId", "eventId", "createdAt", "updatedAt")

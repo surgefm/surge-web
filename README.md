@@ -20,7 +20,7 @@ git clone --recurse-submodules git@github.com:surgefm/surge-web.git
 cd surge-web
 
 # Start all services (Postgres, Redis, backend, frontend)
-make dev
+./run.sh dev
 ```
 
 The frontend will be available at `http://localhost:3000` and the backend API at `http://localhost:1337`.
@@ -30,28 +30,32 @@ The frontend will be available at `http://localhost:3000` and the backend API at
 To populate the local database with data from the production API:
 
 ```bash
-make seed
+./run.sh seed
 ```
 
 You can also specify an alternate API source:
 
 ```bash
-make seed API=https://my-other-api.example.com
+./run.sh seed https://my-other-api.example.com
 ```
 
 The seed script creates an admin account (`surge` / `surgefm`) and pseudo users for all contributors found in the scraped data.
 
-## Makefile Commands
+## Commands
 
 | Command | Description |
 |---------|-------------|
-| `make dev` | Build and start all services |
-| `make down` | Stop all services |
-| `make clean` | Stop all services and remove volumes |
-| `make logs` | Tail logs from all services |
-| `make backend-shell` | Open a shell in the backend container |
-| `make frontend-shell` | Open a shell in the frontend container |
-| `make seed` | Seed the database from the production API |
+| `./run.sh dev` | Build and start all services |
+| `./run.sh down` | Stop all services |
+| `./run.sh clean` | Stop all services and remove images (DB data preserved) |
+| `./run.sh clean frontend` | Clean only the frontend container and image |
+| `./run.sh clean redstone` | Clean only the backend container and image |
+| `./run.sh deep-clean` | Stop all services, remove images and all volumes (including DB) |
+| `./run.sh logs` | Tail logs from all services |
+| `./run.sh shell frontend` | Open a shell in the frontend container |
+| `./run.sh shell redstone` | Open a shell in the backend container |
+| `./run.sh seed` | Seed the database from the production API |
+| `./run.sh seed <url>` | Seed from a custom API source |
 
 ## License
 
