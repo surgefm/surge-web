@@ -51,6 +51,8 @@ services:
       REDIS_PORT: 6379
       REDIS_SSL: "false"
       SEQUELIZE_LOGGING: "false"
+      OPEN_ROUTER_API_KEY: ${OPEN_ROUTER_API_KEY:-}
+      EXA_API_KEY: ${EXA_API_KEY:-}
     depends_on:
       postgres:
         condition: service_healthy
@@ -69,7 +71,7 @@ services:
       - /opt/app/.next
     command: yarn dev
     environment:
-      API_URL: http://localhost:1337
+      NEXT_PUBLIC_API_URL: http://localhost:1337
       API_URL_INTERNAL: http://backend:1337
       NODE_ENV: development
       NODE_OPTIONS: "--max-old-space-size=4096"
