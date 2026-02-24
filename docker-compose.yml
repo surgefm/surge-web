@@ -1,0 +1,78 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: v2land
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./v2land-redstone
+      dockerfile: Dockerfile
+    ports:
+      - "1337:1337"
+    volumes:
+      - ./v2land-redstone:/usr/src/app
+      - /usr/src/app/node_modules
+      - ./seed.js:/seed.js
+    command: node --max-old-space-size=4096 node_modules/gulp-cli/bin/gulp.js watch
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=4096"
+      NODE_ENV: development
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PWD: postgres
+      POSTGRES_DB: v2land
+      POSTGRES_PORT: 5432
+      POSTGRES_SSL: "false"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_SSL: "false"
+      SEQUELIZE_LOGGING: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./v2land-frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./v2land-frontend:/opt/app
+      - /opt/app/node_modules
+      - /opt/app/.next
+    command: yarn dev
+    environment:
+      API_URL: http://localhost:1337
+      API_URL_INTERNAL: http://backend:1337
+      NODE_ENV: development
+      NODE_OPTIONS: "--max-old-space-size=4096"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
